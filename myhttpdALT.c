@@ -124,6 +124,9 @@ main(int argc,char *argv[])
 	argc -= optind;
 	if (argc != 0)
 		usage();
+	if(dir != NULL){
+		chdir(dir);
+	}
 
 /*
  * Create socket on Server.
