@@ -8,7 +8,6 @@
 static char svnid[] = "$Id: soc.c 6 2009-07-03 03:18:54Z kensmith $";
 
 #define	BUF_LEN	8192
-
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
@@ -46,6 +45,9 @@ char *threadnum = NULL;
 char *schedtype = NULL;
 int debug;
 
+int accept_pid;
+int pid;
+
 
 
 int
@@ -59,7 +61,6 @@ main(int argc,char *argv[])
 		uint32_t addr;
 		char bytes[4];
 	} fromaddr;
-
 
 	/*
         Set Program Defaults before getting arguments
@@ -79,6 +80,7 @@ main(int argc,char *argv[])
         Compile the same way that was shown on piaza.
 
 	*/
+
 	port = "8080";
 	schedtime = "60";
 	threadnum = "4";
@@ -92,6 +94,7 @@ main(int argc,char *argv[])
 	while ((ch = getopt(argc, argv, "dhl:p:r:t:n:s:")) != -1)
 		switch(ch) {
 			case 'd':
+			    //Set Debug flag to 1, this will force program to only allow one client at a time
 			    debug = 1;
 				break;
 			case 'h':
@@ -129,6 +132,15 @@ main(int argc,char *argv[])
  This is where we create a socket on the server and actually setup the server.
 
  */
+
+ //Setup server listening on port and waiting for a connection
+ //Once Connection is obtained fork process and child process will handle request
+ //Main process continues to listen
+
+
+
+
+
     s = socket(AF_INET,soctype,0);
     if(s < 0){
         perror("socket");
@@ -302,11 +314,41 @@ setup_server() {
 		exit(1);
 	}
 	fprintf(stderr, "Port number is %d\n", ntohs(remote.sin_port));
+
+	//Maybe Start forking here
 	listen(s, 1);
 	newsock = s;
 	if (soctype == SOCK_STREAM) {
 		fprintf(stderr, "Entering accept() waiting for connection.\n");
-		newsock = accept(s, (struct sockaddr *) &remote, &len);
+		fprintf(stderr, "Waiting For Connection... \n");
+		//Get PID of first process
+		accept_pid = getpid();
+		//Accept First connections
+        newsock = accept(s, (struct sockaddr *) &remote, &len);
+        fprintf(stderr, "New Client Connected \n");
+        //Fork Child process
+        fork();
+        pid = getpid();
+
+        /*  Force first process to stay in loop and watch for new connections
+            When new connection comes fork again
+            Original process should stay in loop to continue to accept and fork
+            Because the process have their own address space the pid value should equal the accept_pid value
+            When updating the pid value in the loop, the new child process will exit but the original should stay
+        */
+        if(debug == 0){
+            while(pid == accept_pid){
+                //This value should not change if this is functioning correctly
+                fprintf(stderr,"Looping Accepting PID = %i \n",pid);
+                fprintf(stderr,"This value should not change if functioning properly \n");
+                newsock = accept(s, (struct sockaddr *) &remote, &len);
+                fprintf(stderr, "New Client Connected \n");
+                fork();
+                pid = getpid();
+            }
+        }else{
+            //Only allow one connection to communicate
+        }
 	}
 	return(newsock);
 }
