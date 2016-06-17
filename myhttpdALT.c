@@ -17,7 +17,6 @@ static char svnid[] = "$Id: soc.c 6 2009-07-03 03:18:54Z kensmith $";
 #include	<netdb.h>
 #include	<netinet/in.h>
 #include	<inttypes.h>
-
 #include    <pthread.h>
 #include    <semaphore.h>
 #include    <fcntl.h>
@@ -29,6 +28,16 @@ void help();
 void usage();
 int setup_client();
 int setup_server();
+
+struct data {
+	/*
+	Other bits of data to include here?
+	time, ipaddress ... get from server or set up
+	*/
+	int val;
+	char* message[BUF_LEN] //is this large enough
+		struct data *next;
+};
 
 int s, sock, ch, server, done, bytes, aflg;
 int soctype = SOCK_STREAM;
@@ -44,10 +53,89 @@ char *schedtime = NULL;
 char *threadnum = NULL;
 char *schedtype = NULL;
 int debug;
+//struct data for linked list
+//linked list functions are: create initial list, add node, del node, and find node
+struct data *head = NULL;
+struct data *curr = NULL;
 
+struct data* create_list(int val) {
+	struct data *ptr = (struct data*)malloc(sizeof(struct data));
+	if (ptr == NULL) {
+		printf("Initial node build failure");
+		return NULL;
+	}
+	ptr->val = val;
+	ptr->next = NULL;
+	head = curr = ptr;
+	return ptr;
+}
+struct data* add_node(int val) {
+	if (head == NULL) {
+		return(create_list(val));
+	}
+	struct data *ptr = (struct data*)malloc(sizeof(struct data));
+	if (ptr == NULL) {
+		printf("Node build failure");
+		return NULL;
+	}
+	ptr->val = val;
+	ptr->next = NULL;
+
+	curr->next = ptr;
+	curr = ptr;
+	return ptr;
+}
+struct data* find_node(int val, struct data **prev) {
+	struct data *ptr = head;
+	struct data *tmp = NULL;
+	bool found = false;
+
+	while (ptr != NULL) {
+		if (ptr->val == val) {
+			found = true;
+			break;
+		}
+		else {
+			tmp = ptr;
+			ptr = ptr->next;
+		}
+	}
+	if (found == true) {
+		if (prev) {
+			*prev = tmp;
+		}
+		return ptr;
+	}
+	else {
+		return NULL;
+	}
+}
+int delete_from_list(int val) {
+	struct data *prev = NULL;
+	strunct data *del = NULL;
+
+	del = find_node(val, &prev);
+	if (del == NULL) {
+		return -1;
+	}
+	else {
+		if (prev != NULL) {
+			prev->next = del->next;
+		}
+		if (del == curr) {
+			curr = prev;
+		}
+		else if (del == head) {
+			head = del->next;
+		}
+	}
+	free(del);
+	del = NULL;
+
+	return 0;
+}
 int accept_pid;
 int pid;
-
 
 
 int
