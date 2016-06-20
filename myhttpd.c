@@ -55,10 +55,6 @@ int debug;
 
 pid_t pid;
 
-//Threading
-pthread_t accept_pthread;
-pthread_t sched_pthread;
-
 //Helper functions/Vars for strings/characters
 int findnextchar(char,char*,int);
 char get_filename(char*);
@@ -113,6 +109,7 @@ main(int argc,char *argv[])
 	threadnum = "4";
 	schedtype = "FCFS";
 	debug = 1;
+	dir = "/"; //Sets dir to process current working directory.
 
 	if ((progname = rindex(argv[0], '/')) == NULL)
 		progname = argv[0];
@@ -350,8 +347,26 @@ setup_server() {
             fprintf(stderr, "Entering accept() waiting for connection.\n");
             fprintf(stderr, "Waiting For Connection... \n");
             //Accept First connections
+
+            //Daemonize
+            //pid_t pid;
+            daemon(0,0);
+            //Set Current Working DIR for Daemon process to Root
+            //pid = fork();
+            //if(pid != 0){
+            //chdir(dir);
+            //}
+            //Force Daemon Process to sit in while loop accepting connections
+            //Forked process should proceed on to read messages
+            //while(pid != 0){
+
+            //#######################################
+            //Instead of forking force listener thread to sit in loop here on accept??
+            //#######################################
+
             newsock = accept(s, (struct sockaddr *) &remote, &len);
             fprintf(stderr, "New Client Connected \n");
+            //}
         }
 	}else{
 	    fprintf(stderr, "Debug Enabled\n");
@@ -559,15 +574,6 @@ help(){
 	fprintf(stderr, "-n threadnumber  :Set number of threads waiting ready in thread pool. Default is 4");
 	fprintf(stderr, "-s sched         :Set the scheduling policy. Either FCFS or SJF. Default is FCFS\n");
     exit(1);
-}
-int daemonize(void){
-    pid_t pid;
-    if((pid=fork())<0) return (-1);
-    else if (pid!=0) exit(0); //Parent goes away
-    setsid(); //become session leader
-    chdir("/"); //cwd
-    umask(0); //clear file creation mask
-    return(0);
 }
 void
 debug_print(time_t time_rcvd,time_t time_assigned,char *buf,unsigned int size_response){
