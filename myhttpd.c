@@ -44,7 +44,7 @@ char *host = NULL;
 extern char *optarg;
 extern int optind;
 
-char *file = NULL;
+char *logfile_name = NULL;
 char *port = NULL;
 char *dir = NULL;
 char *schedtime = NULL;
@@ -53,21 +53,26 @@ char *schedtype = NULL;
 char workingdir[1024];
 int debug;
 
-pid_t pid;
 
 //Helper functions/Vars for strings/characters
 int findnextchar(char,char*,int);
 char get_filename(char*);
+void writeLog(char*);
+void writeDebug(char*);
 char invalid_getrequest[]="server:Invalid GET Request\n";
 char invalid_headrequest[]="server:Invalid HEAD Request\n";
 char invalid_request[]="server:Server only accepts Get and Post requests\n";
 char invalid_file[] = "server:Unable to find file\n";
 void GET_response();
 void HEAD_response();
-
 time_t t;
+pid_t pid;
 
-struct servent *se;
+//Log File Variables
+FILE *logfile;
+char NOTSET[6] = "NOTSET";
+int zero = 0;
+
 
 
 
@@ -108,7 +113,7 @@ main(int argc,char *argv[])
 	schedtime = "60";
 	threadnum = "4";
 	schedtype = "FCFS";
-	debug = 1;
+	debug = 0;
 	dir = "/"; //Sets dir to process current working directory.
 
 	if ((progname = rindex(argv[0], '/')) == NULL)
@@ -118,13 +123,15 @@ main(int argc,char *argv[])
 	while ((ch = getopt(argc, argv, "dhl:p:r:t:n:s:")) != -1)
 		switch(ch) {
 			case 'd':
-			    debug = 0;
+			    debug = 1;
 				break;
 			case 'h':
 			    help();
 				break;
 			case 'l':
-			    file = optarg;
+			    logfile_name = optarg;
+			    //FILE *log;
+			    //log = fopen(file,)
 				break;
 			case 'p':
                 port = optarg;
@@ -191,18 +198,6 @@ main(int argc,char *argv[])
 		FD_SET(sock, &ready);
 		FD_SET(fileno(stdin), &ready);
 
-
-        //Logging
-		if(!debug && file != NULL){
-            //Print log to file
-		}else if(debug && file !=NULL){
-            //Print to screen and to file
-		}else if(debug){
-            //Only print to screen
-		}else{
-            //No Logging
-		}
-
 		if (select((sock + 1), &ready, 0, 0, 0) < 0) {
 			perror("select");
 			exit(1);
@@ -224,6 +219,7 @@ main(int argc,char *argv[])
 		if (FD_ISSET(sock, &ready)) {
 			if ((bytes = recvfrom(sock, buf, BUF_LEN, 0, (struct sockaddr *)&msgfrom, &msgsize)) <= 0) {
 				done++;
+				writeLog("Receiving Message");
 			} else if (aflg) {
 				fromaddr.addr = ntohl(msgfrom.sin_addr.s_addr);
 				fprintf(stderr, "%d.%d.%d.%d: ", 0xff & (unsigned int)fromaddr.bytes[0],
@@ -239,11 +235,50 @@ main(int argc,char *argv[])
                 case'G':
                 {
                     GET_response();
+
+                    //Logging/Debug
+                    /*
+                        %a : The remote IP address.
+                        %t : The time the request was received by the queuing thread (in GMT).
+                        %t : The time the request was assigned to an execution thread by the scheduler (in GMT).
+                        %r : The (quoted) first line of the request.
+                        %>s : The status of the request.
+                        %b : Size of the response in bytes. i.e, "Content-Length".
+
+                        Example:
+                        127.0.0.1 - [19/Sep/2011:13:55:36 -0600] [19/Sep/2011:13:58:21 -0600]
+                        "GET /index.html HTTP/1.0" 200 326
+                    */
+                    char log_buffer[2048];
+                    sprintf(log_buffer,"%s - [%i/%s/%i:%i:%i:%i %i] [%i/%s/%i:%i:%i:%i %i] \"%s\" 200 %i",
+                                    NOTSET,zero,NOTSET,zero,zero,zero,zero,zero,zero,NOTSET,zero,zero,zero,zero,zero,NOTSET,zero);
+                    writeLog(log_buffer);
+                    writeDebug(log_buffer);
+
                 }
                 break;
                 case'H':
                 {
                     HEAD_response();
+
+                     //Logging/Debug
+                    /*
+                        %a : The remote IP address.
+                        %t : The time the request was received by the queuing thread (in GMT).
+                        %t : The time the request was assigned to an execution thread by the scheduler (in GMT).
+                        %r : The (quoted) first line of the request.
+                        %>s : The status of the request.
+                        %b : Size of the response in bytes. i.e, "Content-Length".
+
+                        Example:
+                        127.0.0.1 - [19/Sep/2011:13:55:36 -0600] [19/Sep/2011:13:58:21 -0600]
+                        "GET /index.html HTTP/1.0" 200 326
+                    */
+                    char *log_buffer;
+                    sprintf(log_buffer,"%s - [%i/%s/%i:%i:%i:%i %i] [%i/%s/%i:%i:%i:%i %i] \"%s\" 200 %i",
+                                NOTSET,zero,NOTSET,zero,zero,zero,zero,zero,zero,NOTSET,zero,zero,zero,zero,zero,NOTSET,zero);
+                    writeLog(log_buffer);
+                    writeDebug(log_buffer);
                 }
                 break;
                 default:
@@ -313,7 +348,7 @@ setup_client() {
 int
 setup_server() {
 	struct sockaddr_in serv, remote;
-	//struct servent *se;
+	struct servent *se;
 	int newsock, len;
 
 	len = sizeof(remote);
@@ -340,7 +375,8 @@ setup_server() {
 	}
 	fprintf(stderr, "Port number is %d\n", ntohs(remote.sin_port));
 
-	if(debug){
+	if(debug == 0){
+        //Debug is not on , run normally.
         listen(s, 1);
         newsock = s;
         if (soctype == SOCK_STREAM) {
@@ -369,6 +405,7 @@ setup_server() {
             //}
         }
 	}else{
+	    //Debug on
 	    fprintf(stderr, "Debug Enabled\n");
 	    listen(s, 1);
         newsock = s;
@@ -584,16 +621,6 @@ debug_print(time_t time_rcvd,time_t time_assigned,char *buf,unsigned int size_re
         //Do Nothing
     }
 }
-void
-log_print(time_t time_rcvd,time_t time_assigned,char *buf,unsigned int size_response){
-    if(file != NULL){
-        //Print logging to file
-    }else{
-        //Do Nothing
-    }
-
-
-}
 
 //HELPER FUNCTIONS
 char
@@ -644,6 +671,26 @@ findnextchar(char c,char *string,int start){
         }
     }
     return index;
+}
+void
+writeLog(char *s){
+    if(logfile_name == NULL){
+        //Do not log
+    }else{
+        logfile = fopen(logfile_name,"w");
+        fprintf(logfile,s);
+        fprintf(logfile,"\n");
+        fclose(logfile);
+    }
+}
+void
+writeDebug(char *s){
+    if(debug == 0){
+        //debug off
+    }else{
+        //print debug log to screen
+        fprintf(stderr,s);
+    }
 }
 
 
