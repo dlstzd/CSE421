@@ -93,21 +93,65 @@ void *listener(int s){
             
             
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }
+}
+
+
+void *worker(void){
+    
+    mutex lock 
+    wait for signal from scheduler 
+    this msg = msg_to_be_schedueled
+    unlock 
+    
+    ready msg ... 
+    get time again 
+    do post or head ... 
+    send back info ... 
+    if debug -> log 
+    if not no log 
+    keep running. 
+}
+
+
+
+int main(int argc, char** argv[]){
+// set up socket here
+
+sock = new sock ... etc 
+
+// get arg flags
+for (0 to get_thread_num_from_arg){
+    pthread_create ( worker threads );
+}
+
+
+pthread_create ( listener*) ... // listener arg would be SOCK 
+sleepfor some time
+pthread_create ( scheuduler ) ... // let it run and schedule 
+// at this time we inserted msg's into queue 
+// waited for some msgs'some
+// scheduled and signaling avaiable worker threads .
+
+
+pthread_join (listener)
+pthread_join ( scheduler)
+pthread_join ( worker)
+kill socket 
+display socket 
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    return 0;
+    
 }
