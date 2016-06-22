@@ -50,6 +50,7 @@ char *dir = NULL;
 char *schedtime = NULL;
 char *threadnum = NULL;
 char *schedtype = NULL;
+int schedflag = 0;
 char workingdir[1024];
 int debug;
 
@@ -153,6 +154,11 @@ main(int argc,char *argv[])
 			    break;
             case 's':
                 schedtype = optarg;
+                if(schedtype == "FIFO"){
+                    schedflag = 0;
+                }else if(schedtype == "SJF"){
+                    schedflag = 1;
+                }
                 break;
 			default:
 				usage();
