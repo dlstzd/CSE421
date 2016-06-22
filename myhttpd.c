@@ -47,10 +47,10 @@ extern int optind;
 char *logfile_name = NULL;
 char *port = NULL;
 char *dir = NULL;
-char *schedtime = NULL;
-char *threadnum = NULL;
+int schedtime;
+int threadnum;
 char *schedtype = NULL;
-int schedflag = 0;
+int schedflag;
 char workingdir[1024];
 int debug;
 
@@ -111,11 +111,12 @@ main(int argc,char *argv[])
 	*/
 
 	port = "8080";
-	schedtime = "60";
-	threadnum = "4";
+	schedtime = 60;
 	schedtype = "FCFS";
 	debug = 0;
 	dir = "/"; //Sets dir to process current working directory.
+	threadnum = 0;
+
 
 	if ((progname = rindex(argv[0], '/')) == NULL)
 		progname = argv[0];
@@ -147,10 +148,10 @@ main(int argc,char *argv[])
 			    }
                 break;
             case 't':
-                schedtime = optarg;
+                schedtime = atoi(optarg);
                 break;
             case 'n':
-			    threadnum = optarg;
+			    threadnum = atoi(optarg);
 			    break;
             case 's':
                 schedtype = optarg;
