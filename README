@@ -12,6 +12,11 @@ Directory should contain four files
     context switch locations, how it avoids race conditions, a brief critique of the
     design of the program, and online and offline resources used to help design
     and build the program
+    
+The directory also contains 3 html files that clients can requests from the server. Clients can request
+a file by first connecting to the active server port and submit a request in the form Get/Head [html_file_name].
+After the queuing time has expired the server will send a response with the requested message to the
+client.
 
 Running the program:
     Once compiled, the program can run like a UNIX command
