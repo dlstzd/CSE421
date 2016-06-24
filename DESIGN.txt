@@ -6,8 +6,8 @@ Project 1: Web Server Using Multithreading and Mutual Exclusion
 Design Documentation
 
 a)Group Members(3):
-  Kai Hsu -[EMAIL]
-  Mitch Taylor -[EMAIL]
+  Kai Hsu - kaihsu@gmail.com
+  Mitch Taylor - mitchelt@buffalo.edu
   Dean Steuer -deansteu@buffalo.edu
 
 b)Data Structures
@@ -22,7 +22,10 @@ b)Data Structures
 c)Context Switches
   Context switches are implemented in our code through the scheduler function
   which switches between available threads and allows them to access the shared
-  data structure when it is accessible.  
+  data structure when it is accessible. Writing to and reading from our list
+  structure must be protected in order to ensure data is not overwritten or
+  lost during acess. We utilize mutexes during allocation and deallocation
+  as well as signals for our individual worker threads.
 
 d)Race Conditions
   Race conditions exists during the access of the data structure. Both writing to,
@@ -44,11 +47,13 @@ e)Design Critique
   to iterate through the entire list each time we want to remove something from
   the queue. Additionally, our data structure represents a severe critical resource -
   all major operations are done here and there is potentially, a substantial amount
-  of work done in this context sensitive region.
+  of work done in this context sensitive region. The data structure may not handle
+  all edge cases gracefully. 
 
 f)Works Cited
   soc.c - web server code provided from class written by Ken Smith
 
   C/C++ Socket Programming -Linuxhowtos.org
+  Singly Linked Lists in C -cprogramming.com
   C Date and Time Functions - wikipedia.org
    
