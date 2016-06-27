@@ -3,9 +3,79 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdbool.h>
+
 void help();
 void readNums();
 
+//linked list structure
+
+struct node{
+
+  int id; //actual number assigned to node from input
+  int freq; //number of times the number has occurred used for LFU
+  struct node *next;
+};
+
+struct node *head = NULL;
+struct node *curr = NULL;
+
+struct node* create_list(int val){
+  struct node *ptr = (struct node*)malloc(sizeof(struct node));
+  if(ptr == NULL){
+    printf("Error creating node\n");
+    return NULL;
+  }
+  ptr->id = val;
+  ptr->next = NULL;
+  head = curr = ptr;
+  return ptr;
+
+}
+
+struct node* add_elem(int val){
+  if(head == NULL){
+    return (create_list(val));
+  }
+  struct node *ptr = (struct node*)malloc(sizeof(struct node));
+  if(ptr == NULL){
+    printf("Error creating node\n");
+    return NULL;
+  }
+  ptr->id = val;
+  ptr->next = NULL;
+  
+  curr->next = ptr;
+  curr = ptr;
+
+  return ptr;
+
+}
+
+struct node* find_elem(int elem){ // possibly add frame size limiter here
+  struct node *ptr = head;
+  struct node *temp = NULL;
+  bool found = false;
+
+  while(ptr != NULL){
+    if(ptr->id == elem){
+      found = true;
+      break;
+    }else{
+      temp = ptr;
+      ptr = ptr->next;
+    }
+
+  }
+  if(found == true){ //increment count on node freq
+    printf("Target Found\n");
+    ptr->freq += 1;
+  }
+  else{ //think about what to do here, replace element?
+    return NULL;
+  }
+
+}
 int main(int argc, char* argv[]){
   char* repPol = "FIFO";
   int frames = 5;
@@ -37,18 +107,18 @@ int main(int argc, char* argv[]){
   
   return 0;
 }
-
+//needs work for stdin
 void readNums(int flag, char* filename){
-
-  if(flag == 0){
-    printf("No file specified, reading from STDIN Press ] to break...\n>");
-    char ch;
-    do{
-      ch = getchar();
-      printf("character is %c\n", ch);
-    }while(getchar() != ']');
-  }else{
-    char buf[255];     
+  char buf[255];  
+  if(flag == 0){ //stdin
+    /*printf("Reading from stdin, numbers only! Hit enter when done\n");
+    char c;
+    c = getchar();
+    while(c != '\n'){
+      buf = getchar();
+      }
+    */
+  }else{ //read from file
     FILE *fp;
     fp = fopen(filename, "r");
     fgets(buf, 255, (FILE*)fp);
