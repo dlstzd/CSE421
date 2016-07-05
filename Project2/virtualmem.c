@@ -4,9 +4,22 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <time.h>
 
 void help();
 void readNums();
+
+int OPTIMAL();
+int FIFO();
+int LFU();
+int LRU_STACK();
+int LRU_REF8();
+
+double start_time();
+double stop_time();
+double total_time();
+
+
 
 //linked list structure
 
@@ -76,6 +89,7 @@ struct node* find_elem(int elem){ // possibly add frame size limiter here
   }
 
 }
+
 int main(int argc, char* argv[]){
   char* repPol = "FIFO";
   int frames = 5;
@@ -115,6 +129,7 @@ void readNums(int flag, char* filename){
      size_t len = 0;
      ssize_t read;
      read = getline(&inBuf,&len,stdin);
+     //Add numbers to Linked List
      //Call Page Replacement Algorithm on inBuf
 
     }else{ //read from file
@@ -122,6 +137,7 @@ void readNums(int flag, char* filename){
      fp = fopen(filename, "r");
      fgets(buf, 255, (FILE*)fp);
      printf(buf);
+     //Add numbers to Linked List
      //Call Page Replacement Algorithm on buf
   }
 }
@@ -140,3 +156,45 @@ void help(){
   printf("-i input-file         :Read the page reference sequence from a specified file.\n\t\t\tIf not given, the sequence will be read from STDIN\n\n");
   exit(1);
 }
+
+//Page Replacement Algorithms
+int OPTIMAL(){
+ int pageReplacements = 0;
+
+ return pageReplacements;
+}
+int FIFO(){
+ int pageReplacements = 0;
+
+ return pageReplacements;
+}
+int LFU(){
+ int pageReplacements = 0;
+
+ return pageReplacements;
+}
+int LRU_STACK(){
+ int pageReplacements = 0;
+
+ return pageReplacements;
+}
+int LRU_REF8(){
+ int pageReplacements = 0;
+
+ return pageReplacements;
+}
+
+//Runtime algorithm
+double start_time(){
+    clock_t start = clock();
+    return start;
+}
+double stop_time(){
+    clock_t stop = clock();
+    return stop;
+}
+double total_time(double start,double end){
+    double totalTime = (double)end - start * 10000.0 / (double)CLOCKS_PER_SEC;
+    return totalTime;
+}
+
