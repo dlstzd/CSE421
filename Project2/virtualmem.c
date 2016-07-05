@@ -44,7 +44,7 @@ struct node* add_elem(int val){
   }
   ptr->id = val;
   ptr->next = NULL;
-  
+
   curr->next = ptr;
   curr = ptr;
 
@@ -86,7 +86,6 @@ int main(int argc, char* argv[]){
     if(strcmp(argv[i],"-h") == 0){
       help();
     }else if(strcmp(argv[i], "-f") == 0){
-      //printf("Number of frame is %s\n", argv[i+1]);
       frames = atoi(argv[i+1]);
       i++;
     }else if(strcmp(argv[i], "-r") == 0){
@@ -100,29 +99,30 @@ int main(int argc, char* argv[]){
   }
   readNums(readflg, filename);
   printf("Number of frames is: %d\n", frames);
-  printf("replacement policy is %s\n", repPol);
+  printf("Replacement policy is %s\n", repPol);
 
 
 
-  
+
   return 0;
 }
 //needs work for stdin
 void readNums(int flag, char* filename){
-  char buf[255];  
+  char buf[255];
   if(flag == 0){ //stdin
-    /*printf("Reading from stdin, numbers only! Hit enter when done\n");
-    char c;
-    c = getchar();
-    while(c != '\n'){
-      buf = getchar();
-      }
-    */
-  }else{ //read from file
-    FILE *fp;
-    fp = fopen(filename, "r");
-    fgets(buf, 255, (FILE*)fp);
-    printf(buf);
+     printf("Reading from stdin, numbers only! Hit enter when done\n");
+     char *inBuf;
+     size_t len = 0;
+     ssize_t read;
+     read = getline(&inBuf,&len,stdin);
+     //Call Page Replacement Algorithm on inBuf
+
+    }else{ //read from file
+     FILE *fp;
+     fp = fopen(filename, "r");
+     fgets(buf, 255, (FILE*)fp);
+     printf(buf);
+     //Call Page Replacement Algorithm on buf
   }
 }
 
