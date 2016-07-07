@@ -92,11 +92,9 @@ bool find_elem(int elem){ // possibly add frame size limiter here
 
   }
   if(found == true){ //increment count on node freq
-    printf("Target Found\n");
     return true;
   }
   else{ //think about what to do here, replace element?
-    printf("false \n");
     return false;
   }
 
@@ -120,6 +118,15 @@ struct node* add_elem(){
 
   return ptr;
 
+}
+
+void delete_list(){
+  struct node *temp = (struct node*)malloc(sizeof(struct node));
+  while(head != NULL){
+    temp = head;
+    head = temp->next;
+    free(temp);
+  }
 }
 
 int main(int argc, char* argv[]){
@@ -267,15 +274,14 @@ void readNums(int flag, char* filename,int frames,char* repAlgorithm){
        add_elem();
        i++;
      }
+     i=0;
      //start off at the beginning(head) of the list
      curr=head;
 
      if(strcmp(repAlgorithm,"FIFO")== 0){
         start = start_time();
         fprintf(stderr,"Attempting to call FIFO()\n");
-
         algPageReplacements = FIFO(buf);
-	printf("IIIIII : %d", algPageReplacements);
         stop = stop_time();
         algTime = total_time(start,stop);
      }else if(strcmp(repAlgorithm,"LFU") == 0){
@@ -307,6 +313,13 @@ void readNums(int flag, char* filename,int frames,char* repAlgorithm){
         exit(0);
      }
      //Run Optimal Algorithm
+     //Clear list
+     delete_list();
+     while(i < frames){
+       add_elem();
+       i++;
+     }
+     curr=head;
      start = start_time();
      fprintf(stderr,"Attempting to call OPTIMAL()\n");
      optimalPageReplacements = OPTIMAL(frames,buf);
@@ -365,9 +378,83 @@ void help(){
 int OPTIMAL(int frames,char *buffer){
  fprintf(stderr,"Entered OPTIMAL Alg\n");
  int pageReplacements = 0;
+ char* futureBuf = buffer;
+ int d=0;
+ for(d;d<strlen(buffer)-1;d++){
+   if(buffer[d] == ' '){
+     printf("Space Detected\n");
+   }else{
+     int val = atoi(&buffer[d]);
 
+     struct node *ptr = (struct node*)malloc(sizeof(struct node));
+     ptr = curr;
+     if (ptr->id == -1){
+       ptr->id = val;
+       if(ptr->next == NULL){
+	 curr = head;
+       }
+       else{ curr = ptr->next;}
+     }
+     if (find_elem(val)){
+       //Do Nothing, do not need to count hits
+       printf("Element found\n");
+     }else{
+       
+       //need a copy of the buffer to go through until next occurrence of id
+       int hold = ptr->id;
+       int largest = 0;
+       int largestID = ptr->id;
+       printf("Got here\n");
+       if(ptr->next == NULL){
+	 ptr=head;
+       }else{
+	 ptr = ptr->next;
+       }
+       while(ptr->id != hold){
+	 int i = d;
+	 for(i; i<strlen(futureBuf)-1; i++){
+	   int temp = atoi(&futureBuf[i]);
+	   if(temp == ptr->id){
+	     break;
+	   }else{
+	     ptr->freq++; //here freq refers to the distance to next occurence of id in futureBuf
+	   }
+	 }
+	 if(ptr->freq > largest){
+	   largest = ptr->freq;
+	   largestID = ptr->id;
+	 }
+	 if(ptr->next == NULL){
+	   ptr=head;
+	 }else{
+	   ptr = ptr->next;
+	 }
+       }
+
+       while(ptr->id != largestID){
+	 if(ptr->next = head){
+	   ptr=head;
+	 }else{
+	   ptr = ptr->next;
+	 }
+       }
+       
+	 
+       pageReplacements++;
+       ptr->id = val;
+       ptr->freq = 1;
+        if(ptr->next == NULL){
+            curr = head;
+        }
+        else{ curr = ptr->next; }
+     }
+     
+   }
+ }
+ print_list();
  return pageReplacements;
 }
+
 int FIFO(char *buffer){
  fprintf(stderr,"Entered FIFO Alg\n");
  int pageReplacements = 0;
@@ -386,7 +473,6 @@ int FIFO(char *buffer){
      printf("Space detected\n");
    }
    else{
-     printf("HI\n");
     int val = atoi(&buffer[d]);
     //printf("VALUE IS: %d\n\n\n", val);
 
