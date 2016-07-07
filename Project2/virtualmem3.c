@@ -380,9 +380,10 @@ int OPTIMAL(int frames,char *buffer){
  int pageReplacements = 0;
  char* futureBuf = buffer;
  int d=0;
+ print_list();
  for(d;d<strlen(buffer)-1;d++){
    if(buffer[d] == ' '){
-     printf("Space Detected\n");
+     printf("\n");
    }else{
      int val = atoi(&buffer[d]);
 
@@ -397,14 +398,14 @@ int OPTIMAL(int frames,char *buffer){
      }
      if (find_elem(val)){
        //Do Nothing, do not need to count hits
-       printf("Element found\n");
+       printf("\nElement found\n");
      }else{
-       
+       printf("OPT REPLACE CASE\nValue is : %d\n", val);
        //need a copy of the buffer to go through until next occurrence of id
        int hold = ptr->id;
+       printf("HOLD IS: %d", hold);
        int largest = 0;
        int largestID = ptr->id;
-       printf("Got here\n");
        if(ptr->next == NULL){
 	 ptr=head;
        }else{
@@ -413,26 +414,35 @@ int OPTIMAL(int frames,char *buffer){
        while(ptr->id != hold){
 	 int i = d;
 	 for(i; i<strlen(futureBuf)-1; i++){
-	   int temp = atoi(&futureBuf[i]);
-	   if(temp == ptr->id){
-	     break;
+
+	   if(futureBuf[i] == ' '){
 	   }else{
-	     ptr->freq++; //here freq refers to the distance to next occurence of id in futureBuf
+	     int temp = atoi(&futureBuf[i]);
+	     if(temp == ptr->id){
+	       break;
+	     }else{
+	       ptr->freq++; //here freq refers to the distance to next occurence of id in futureBuf
+	     }
 	   }
 	 }
+	printf("ID is : %d Distance to next is : %d\n", ptr->id, ptr->freq);
 	 if(ptr->freq > largest){
 	   largest = ptr->freq;
 	   largestID = ptr->id;
 	 }
+	 print_list();
 	 if(ptr->next == NULL){
+	   ptr->freq = -1;
 	   ptr=head;
 	 }else{
+	   ptr->freq = -1;
 	   ptr = ptr->next;
+
 	 }
        }
-
+       printf("ID of element with largest distance is: %d\n", largestID);
        while(ptr->id != largestID){
-	 if(ptr->next = head){
+	 if(ptr->next == NULL){
 	   ptr=head;
 	 }else{
 	   ptr = ptr->next;
@@ -443,15 +453,14 @@ int OPTIMAL(int frames,char *buffer){
        pageReplacements++;
        ptr->id = val;
        ptr->freq = 1;
-        if(ptr->next == NULL){
-            curr = head;
-        }
-        else{ curr = ptr->next; }
+       if(ptr->next == NULL){
+           curr = head;
+       }
+       else{ curr = ptr->next; }
      }
      
    }
  }
- print_list();
  return pageReplacements;
 }
 
