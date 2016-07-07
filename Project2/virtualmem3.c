@@ -263,9 +263,11 @@ void readNums(int flag, char* filename,int frames,char* repAlgorithm){
 
      int i = 0;
      while(i < frames){
+       //will build our list of frames, add_elem sets default value for id and frequency to -1 
        add_elem();
        i++;
      }
+     //start off at the beginning(head) of the list
      curr=head;
 
      if(strcmp(repAlgorithm,"FIFO")== 0){
@@ -382,7 +384,6 @@ int FIFO(char *buffer){
     //Set val to the next character in buffer , convert to integer.
    if(buffer[d] == ' '){
      printf("Space detected\n");
-     //d++;
    }
    else{
      printf("HI\n");
@@ -417,44 +418,69 @@ int FIFO(char *buffer){
  return pageReplacements;
 }
 
+
+//Least Frequently Used Algorithm
 int LFU(int frames,char *buffer){
-  int pageReplacements = 0;
+ int pageReplacements = 0;
  fprintf(stderr,"Entered LFU Alg\n");
  int d = 0;
  int temp=0;
  printf("BUF: %s", buffer);
+ 
  for(d;d<strlen(buffer)-1;d++){
-    //Set val to the next character in buffer , convert to integer.
+   //used to ignore space characters
    if(buffer[d] == ' '){
      printf("Space detected\n");
      //d++;
    }
+   //we have some number do the following
    else{
-     printf("HI\n");
     int val = atoi(&buffer[d]);
-    //printf("VALUE IS: %d\n\n\n", val);
     
+    /*create a node struct which will be
+     used to go through our already built list (this was done around line 246) 
+     Three options for every number
+     1) There is no set value for our node we can just replace any id with -1
+     2) The current element in the buffer is already in the list
+     3) The current element in the buffer is not in the list 
+     */
     struct node *ptr = (struct node*)malloc(sizeof(struct node));
     ptr = curr;
+    //Case 1: node is "empty", just replace the id and frequency
     if (ptr->id == -1){
         ptr->id = val;
 	ptr->freq = 0;
+	//if we are at the end of our list go back to the head
         if(ptr->next == NULL){
             curr = head;
         }
+	//otherwise go to the next node in the list
         else{ curr = ptr ->next; }
     }
+    //Case 2: our current buffer element is found in the list -- determined by find_elem() line 76
     if(find_elem(val)){
-        //Do Nothing, do not need to count hits
+      /*copy the id of the current id this has to be done in order to keep track of where
+       we are in the list, find_elem() just returns true if it finds the id but does not keep track
+       of current position in our list
+       */
       int temp = ptr->id;
       while(ptr->id != val){
+	//same travel through the list as before
 	if(ptr->next==NULL){
 	  ptr = head;}
 	else{
 	ptr= ptr->next;
 	}
       }
+      //at this point we found the right id, increment its frequency 
       ptr->freq++;
+      
+      /*NOTE: I'm not too sure what the use of this is, I ran this with and
+       without the following code and the results seem to be the same
+       */
+      //FROM HERE
+      //set the ptr to be the next
+
       while(ptr->id != temp){
 	if(ptr->next==NULL){
 	  ptr=head;
@@ -464,15 +490,18 @@ int LFU(int frames,char *buffer){
 	}
       }
         printf("Element found\n");
-	//ptr->freq++;
+	//TO HERE
     }
+    //Case 3: current buffer element was not found in the list of frames
     else{
        //Increment Page Replacement Counter.
-      
+      //ntemp helps us loop through until we find our id again
+      //smallestID will be the id to be replaced
       int ntemp = ptr->id;
       int smallest = ptr->freq;
       int smallestID = ptr->id;
-        printf("smallest ids : %d %d \n\n" , smallestID,smallest);
+      //printf("smallest ids : %d %d \n\n" , smallestID,smallest);
+      //same travel through list as before
       if(ptr->next == NULL){
 	ptr=head;
       }
@@ -480,19 +509,20 @@ int LFU(int frames,char *buffer){
       else{
 	ptr = ptr->next;
       }
+      //loop through the entire list and check for the smallest frequency of each id,
 	while(ptr->id != ntemp){
 	  if(ptr->freq < smallest){
 	    smallest = ptr->freq;
 	    smallestID = ptr->id;
 	  }
-	
+	  //same travel through list
 	  if(ptr->next == NULL){
 	    ptr = head;
 	  }else{
 	    ptr = ptr->next;
 	  }
 	}
-      printf("SMALLEST: %d\n", smallestID);
+	//smallestID has now been determined go through list until we find the correct id, 
       while(ptr->id != smallestID){
 	if(ptr->next == NULL){
 	  ptr = head;
@@ -501,7 +531,7 @@ int LFU(int frames,char *buffer){
 	}
        }
  
-
+      //replace the element move the pointer to the next position in the list
       pageReplacements++;
        ptr->id = val;
        ptr->freq = 1;
