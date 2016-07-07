@@ -393,7 +393,7 @@ int OPTIMAL(int frames,char *buffer){
        //need a copy of the buffer to go through until next occurrence of id
        int hold = ptr->id;
        printf("HOLD IS: %d\n", hold);
-       ptr->freq = -1;
+ 
        int largestID = ptr->id;
        printf("LARGEST IS: %d\n", largestID);
        
@@ -402,6 +402,7 @@ int OPTIMAL(int frames,char *buffer){
 	 if(futureBuf[t] == ' '){
 	   
 	 }else{
+	   ptr->freq = -1;
 	   int temp = atoi(&futureBuf[t]);
 	   if(temp == ptr->id){
 	     break;
