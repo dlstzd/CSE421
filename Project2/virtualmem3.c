@@ -23,23 +23,6 @@ struct timeval total_time(struct timeval,struct timeval);
 void print_time_ms();
 
 
-
-
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<string.h>
-#include	<ctype.h>
-#include	<sys/types.h>
-#include	<sys/socket.h>
-#include	<netdb.h>
-#include 	<time.h>
-#include	<netinet/in.h>
-#include	<inttypes.h>
-#include    <pthread.h>
-#include    <semaphore.h>
-#include    <fcntl.h>
-#include    <stdbool.h>
-
 struct node{
 
   int id; //number id assigned to node from input
@@ -326,6 +309,10 @@ void readNums(int flag, char* filename,int frames,char* repAlgorithm){
      stop = stop_time();
      optimalTime = total_time(start,stop);
 
+     algPenalty = (algPageReplacements - optimalPageReplacements);
+     algPenalty = (algPenalty/optimalPageReplacements)*100;
+     //printf("temp pen is: %.2f\n", algPenalty);
+
      //Compare times and page replacements between optimal and algorithm.
      /* Example of output.
         # of page replacements with LFU : 118
@@ -339,7 +326,7 @@ void readNums(int flag, char* filename,int frames,char* repAlgorithm){
      printf("\n");
      printf("# of page replacements with %s : %i\n",repAlgorithm,algPageReplacements);
      printf("# of page replacements with Optimal: %i\n",optimalPageReplacements);
-     printf("# page replacement penalty using %s: %f\n",repAlgorithm,algPenalty);
+     printf("# page replacement penalty using %s: %.2f%%\n",repAlgorithm,algPenalty);
      printf("\n");
      printf("Total time to run %s algorithm: ",repAlgorithm);
      print_time_ms(algTime);
@@ -403,11 +390,12 @@ int OPTIMAL(int frames,char *buffer){
        printf("OPT REPLACE CASE\nValue is : %d\n", val);
        //need a copy of the buffer to go through until next occurrence of id
        int hold = ptr->id;
-       printf("HOLD IS: %d", hold);
+       printf("HOLD IS: %d\n", hold);
        int largest = 0;
        int largestID = ptr->id;
+       printf("LARGEST IS: %d\n", largestID);
        if(ptr->next == NULL){
-	 ptr=head;
+        ptr=head;
        }else{
 	 ptr = ptr->next;
        }
@@ -479,7 +467,7 @@ int FIFO(char *buffer){
  for(d;d<strlen(buffer)-1;d++){
     //Set val to the next character in buffer , convert to integer.
    if(buffer[d] == ' '){
-     printf("Space detected\n");
+     printf("\n");
    }
    else{
     int val = atoi(&buffer[d]);
