@@ -433,7 +433,7 @@ int LFU(int frames,char *buffer){
      printf("HI\n");
     int val = atoi(&buffer[d]);
     //printf("VALUE IS: %d\n\n\n", val);
-
+    
     struct node *ptr = (struct node*)malloc(sizeof(struct node));
     ptr = curr;
     if (ptr->id == -1){
@@ -468,9 +468,39 @@ int LFU(int frames,char *buffer){
     }
     else{
        //Increment Page Replacement Counter.
-
-
-
+      
+      int ntemp = ptr->id;
+      int smallest = ptr->freq;
+      int smallestID = ptr->id;
+        printf("smallest ids : %d %d \n\n" , smallestID,smallest);
+      if(ptr->next == NULL){
+	ptr=head;
+      }
+      
+      else{
+	ptr = ptr->next;
+      }
+	while(ptr->id != ntemp){
+	  if(ptr->freq < smallest){
+	    smallest = ptr->freq;
+	    smallestID = ptr->id;
+	  }
+	
+	  if(ptr->next == NULL){
+	    ptr = head;
+	  }else{
+	    ptr = ptr->next;
+	  }
+	}
+      printf("SMALLEST: %d\n", smallestID);
+      while(ptr->id != smallestID){
+	if(ptr->next == NULL){
+	  ptr = head;
+	}else{
+	  ptr= ptr->next;
+	}
+       }
+ 
 
       pageReplacements++;
        ptr->id = val;
@@ -478,13 +508,14 @@ int LFU(int frames,char *buffer){
         if(ptr->next == NULL){
             curr = head;
         }
-        else{ curr = ptr ->next; }
+        else{ curr = ptr->next; }
     }
    }
  }
  print_list();
  return pageReplacements;
 }
+
 int LRU_STACK(int frames,char *buffer){
  fprintf(stderr,"Entered LRU_STACK Alg\n");
  int pageReplacements = 0;
