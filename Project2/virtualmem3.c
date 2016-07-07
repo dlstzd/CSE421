@@ -362,6 +362,8 @@ void help(){
 }
 
 //Page Replacement Algorithms
+
+//TODO: is curr the right position to set
 int OPTIMAL(int frames,char *buffer){
  fprintf(stderr,"Entered OPTIMAL Alg\n");
  int pageReplacements = 0;
@@ -391,9 +393,25 @@ int OPTIMAL(int frames,char *buffer){
        //need a copy of the buffer to go through until next occurrence of id
        int hold = ptr->id;
        printf("HOLD IS: %d\n", hold);
-       int largest = 0;
+       ptr->freq = -1;
        int largestID = ptr->id;
        printf("LARGEST IS: %d\n", largestID);
+       
+       int t = d;
+       for(t; t<strlen(futureBuf)-1; t++){
+	 if(futureBuf[t] == ' '){
+	   
+	 }else{
+	   int temp = atoi(&futureBuf[t]);
+	   if(temp == ptr->id){
+	     break;
+	   }else{
+	     ptr->freq++;
+	   }
+	 }
+       }
+       int largest = ptr->freq;
+       
        if(ptr->next == NULL){
         ptr=head;
        }else{
@@ -420,12 +438,11 @@ int OPTIMAL(int frames,char *buffer){
 	 }
 	 print_list();
 	 if(ptr->next == NULL){
-	   ptr->freq = -1;
 	   ptr=head;
-	 }else{
 	   ptr->freq = -1;
+	 }else{
 	   ptr = ptr->next;
-
+	   ptr->freq = -1;
 	 }
        }
        printf("ID of element with largest distance is: %d\n", largestID);
@@ -632,6 +649,51 @@ int LFU(int frames,char *buffer){
 int LRU_STACK(int frames,char *buffer){
  fprintf(stderr,"Entered LRU_STACK Alg\n");
  int pageReplacements = 0;
+ int d = 0;
+ for(d; d<strlen(buffer)-1; d++){
+   if(buffer[d] == ' '){
+     printf('\n');
+   }else{
+     int val = atoi(&buffer[d]);
+
+     struct node *ptr = (struct node*)malloc(sizeof(struct node));
+     ptr = curr;
+     if(ptr->id == -1){
+       ptr->id = val;
+       ptr->freq = 0;
+       if(ptr->next == NULL){
+	 curr = head;
+       }else{
+	 curr = ptr->next;
+       }
+     }
+     if(find_elem(val)){
+       int temp = ptr->id;
+       while(ptr->id != val){
+	 if(ptr->next == NULL){
+	   ptr = head;
+	 }else{
+	   ptr = ptr->next;
+	 }
+       }
+
+       ptr->freq = 0;
+
+       while(ptr->id != temp){
+	 if(ptr->next == NULL){
+	   ptr = head;
+	 }else{
+	   ptr=ptr->next;
+	 }
+       }
+       printf("Element found\n");
+     }else{
+       
+     }
+     
+   }
+
+ }
 
  return pageReplacements;
 }
