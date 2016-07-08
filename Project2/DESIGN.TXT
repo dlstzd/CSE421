@@ -44,5 +44,6 @@ http://www.cprogramming.com/tutorial/bitwise_operators.html
 http://www.learn-c.org/en/Linked_lists
 CSE421 Quiz 2
 CSE 421 Slides – Memory Management
+UNIX manual pages on file reads and standard input
 
 
