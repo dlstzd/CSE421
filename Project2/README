@@ -7,7 +7,9 @@ README
 Implementation of a virtual memory manager in C. It will take a sequence of
 page references as an input, as well as the number of available frames. It 
 performs the placement of these pages to the available frames using the page
-replacement policy specified by the user.
+replacement policy specified by the user. Times may not display for low number
+of pages because program completes under 1 millisecond. Larger files should be
+used show that time is working.
 
 
 Files included:
