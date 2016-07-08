@@ -1,0 +1,47 @@
+CSE 421: Operating Systems 
+Tevfik Kosar
+
+
+a. Team Information
+Team Name: mkd
+Team Members:
+     Kai Hsu :
+     	UB #:
+	email: 
+     Mitch Taylor:
+     	UB #:
+	email:
+     Dean Steuer:
+     	UB #: 50049970
+	email: deansteu@buffalo.edu
+
+b. Data Structures
+The replacement algorithms all utilize a singly linked list for page replacements.
+This linked contains a value to hold the id of the input value, and another integer 
+value which is utilized differently (or not at all) based on the algorithm. FIFO 
+does not use this value, LFU uses this to keep track of the number of times the 
+specific id has occurred while it has been in the frame. For LRU-CLOCK and LRU-STACK, 
+the value is used to keep track of the “age” of the element in the frame. The 
+LRU-STACK also has small arrays used for keeping track of the elements. Values are 
+passed to these temporary arrays when we need to determine replacements. The LRU-REF8 
+algorithm uses an unsigned 8 bit integer which is shifted right based on iterations 
+through the list, the bit is shifted right to simulate aging.
+
+c. Design Critique
+One of the major design flaws is related to our linked list which can only be traversed 
+in one direction. This requires each of our algorithms to create temporary variables 
+which refer to current positions in our list of frames. In some cases a number of copies 
+must be made and maintained through the life of the algorithms run which makes errors 
+and bugs more likely to occur. Another issue with the structure of our list is that it 
+is non-circular, reaching the end of the list (defined by the number of frames) requires 
+us to hard code connections back to the front of the list. The occurs many times throughout 
+each algorithm, the places also allows for bugs to develop. Another design issue is the 
+amount of redundant code throughout. 
+
+d. Resources used
+http://www.cprogramming.com/tutorial/bitwise_operators.html
+http://www.learn-c.org/en/Linked_lists
+CSE421 Quiz 2
+CSE 421 Slides – Memory Management
+
+

@@ -1,0 +1,37 @@
+Virtual Memory Project
+CSE 421 Kosar
+Summer 2016
+
+README
+
+Implementation of a virtual memory manager in C. It will take a sequence of
+page references as an input, as well as the number of available frames. It 
+performs the placement of these pages to the available frames using the page
+replacement policy specified by the user.
+
+
+Files included:
+  virtualmem.c -- primary file containing implementation of various algorithms
+  Makefile -- contains script to compile virtualmem.c into an executable called virtualmem
+  README -- this file, an explanation of the project and how to run
+  DESIGN.txt -- a design document specifying the group members, data structures,
+  	     	criticism of design, and resources used during development
+
+How to Run:
+  virtualmem [-h][-f available frames][-r replacement-policy][-i input-file]
+
+-h                    :Print a usage summary with all options and exit
+
+-f available frames   :Set the number of frames, by default set to 5
+
+-r replacement-policy :Set the page replacement policy. Options follow:
+
+    FIFO(First-in-first-out)
+    LFU(Least-frequenty-used)
+    LRU-STACK(Least-recently-used stack implmentation)
+    LRU-CLOCK(Least-recently-used clock implementation)
+    LRU-REF8(Least-recently-used Reference-bit Implementation, using 8 reference bits)
+    
+    Default is FIFO
+  
+-i input-file         :Read the page reference sequence from a specified file. If not given, the sequence will be read from STDIN
