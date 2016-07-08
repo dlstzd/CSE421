@@ -6,11 +6,11 @@ a. Team Information
 Team Name: mkd
 Team Members:
      Kai Hsu :
-     	UB #:
-	email: 
+     	UB #: 50046229
+	email: khsu7@buffalo.edu
      Mitch Taylor:
-     	UB #:
-	email:
+     	UB #: 50132476
+	email: mitchelt@buffalo.edu
      Dean Steuer:
      	UB #: 50049970
 	email: deansteu@buffalo.edu
