@@ -25,7 +25,7 @@ the value is used to keep track of the “age” of the element in the frame. Th
 LRU-STACK also has small arrays used for keeping track of the elements. Values are 
 passed to these temporary arrays when we need to determine replacements. The LRU-REF8 
 algorithm uses an unsigned 8 bit integer which is shifted right based on iterations 
-through the list, the bit is shifted right to simulate aging.
+through the list, the bit is shifted right to simulate aging. 
 
 c. Design Critique
 One of the major design flaws is related to our linked list which can only be traversed 
@@ -36,7 +36,8 @@ and bugs more likely to occur. Another issue with the structure of our list is t
 is non-circular, reaching the end of the list (defined by the number of frames) requires 
 us to hard code connections back to the front of the list. The occurs many times throughout 
 each algorithm, the places also allows for bugs to develop. Another design issue is the 
-amount of redundant code throughout. 
+amount of redundant code throughout. The program can process data from a text file as
+requested but suffers from segmentation faults when characters are read from STDIN. 
 
 d. Resources used
 http://www.cprogramming.com/tutorial/bitwise_operators.html
