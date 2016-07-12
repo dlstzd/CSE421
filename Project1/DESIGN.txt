@@ -6,9 +6,7 @@ Project 1: Web Server Using Multithreading and Mutual Exclusion
 Design Documentation
 
 a)Group Members(3):
-  Kai Hsu - kaihsu@gmail.com
-  Mitch Taylor - mitchelt@buffalo.edu
-  Dean Steuer -deansteu@buffalo.edu
+
 
 b)Data Structures
   Our team used a linked list to store data related to the message, this
