@@ -5,15 +5,7 @@ Tevfik Kosar
 a. Team Information
 Team Name: mkd
 Team Members:
-     Kai Hsu :
-     	UB #: 50046229
-	email: khsu7@buffalo.edu
-     Mitch Taylor:
-     	UB #: 50132476
-	email: mitchelt@buffalo.edu
-     Dean Steuer:
-     	UB #: 50049970
-	email: deansteu@buffalo.edu
+
 
 b. Data Structures
 The replacement algorithms all utilize a singly linked list for page replacements.
